@@ -67,6 +67,7 @@ function Route({ d, stroke, width }: { d: string; stroke: string; width: number 
 
 const FRESH = 'garminLook.fresh';
 
+// Links here don't prefetch: through the terraink.space rewrite (multi-zones) Next's segment prefetches come back 404
 const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal';
 
 export default function Landing() {
@@ -111,7 +112,7 @@ export default function Landing() {
         {/* same nav as terraink.space: Maps, Runs, then the shared theme toggle */}
         <nav className="flex items-center gap-6 font-mono text-[11px] uppercase tracking-[0.2em] text-soft">
           <a href="https://terraink.space/maps" className={`transition-colors hover:text-paper ${focus}`}>Maps</a>
-          <Link href="/" aria-current="page" className={`text-paper ${focus}`}>Runs</Link>
+          <Link href="/" prefetch={false} aria-current="page" className={`text-paper ${focus}`}>Runs</Link>
           <ThemeToggle />
         </nav>
       </header>
@@ -123,7 +124,7 @@ export default function Landing() {
             <p className="mt-5 max-w-md text-lg text-soft text-pretty">Drop the FIT file your watch recorded. The route, the pace, the heart rate and the climbing become a film you can export.</p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Button size="lg" onClick={() => pick.current()} className="h-12 rounded-full px-6 text-base font-semibold transition-transform hover:-translate-y-0.5">Choose a .fit file</Button>
-              <Link href="/film" className={`font-medium text-paper underline decoration-line underline-offset-4 hover:decoration-signal ${focus}`}>Watch the sample →</Link>
+              <Link href="/film" prefetch={false} className={`font-medium text-paper underline decoration-line underline-offset-4 hover:decoration-signal ${focus}`}>Watch the sample →</Link>
             </div>
             <Collapsible className="group mt-4 max-w-md">
               <p className="text-sm text-soft">
@@ -143,7 +144,7 @@ export default function Landing() {
             </Collapsible>
             <p role="alert" className="mt-3 min-h-6 text-alert">{error}</p>
           </div>
-          <Link href="/film" aria-label="Watch the film of the sample run" className={`group relative block overflow-hidden rounded-xl ring-1 ring-line ${focus}`}>
+          <Link href="/film" prefetch={false} aria-label="Watch the film of the sample run" className={`group relative block overflow-hidden rounded-xl ring-1 ring-line ${focus}`}>
             <div className="transition-transform duration-500 group-hover:scale-[1.015] motion-safe:animate-[rise_.9s_cubic-bezier(.16,1,.3,1)_both]">
               <Live template="film" priority className="aspect-video" still={{ light: filmLight, dark: filmDark }} alt="A film of a run: the route in heart-rate colours, with distance, time and heart rate" />
             </div>
@@ -193,7 +194,7 @@ export default function Landing() {
         </div>
         <div className="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-6">
           {TEMPLATES.map(t => { const id = t.href.slice(1) as Template; return (
-            <Link key={t.href} href={t.href} className={`group flex flex-col ${focus} rounded-xl ${t.format.includes('PNG') ? 'lg:col-span-3' : 'lg:col-span-2'}`}>
+            <Link key={t.href} href={t.href} prefetch={false} className={`group flex flex-col ${focus} rounded-xl ${t.format.includes('PNG') ? 'lg:col-span-3' : 'lg:col-span-2'}`}>
               <div className="flex h-72 items-center justify-center rounded-xl bg-peat p-5 ring-1 ring-line transition group-hover:ring-signal">
                 {/* keyed on mine: a loaded run shows no sample stills */}
                 <Live key={String(run.mine)} template={id} at={CARD[id].at} still={run.mine ? undefined : t.img} alt={`${t.name} template`}

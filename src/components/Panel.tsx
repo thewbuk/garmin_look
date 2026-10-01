@@ -95,7 +95,7 @@ export default function Panel({ c }: { c: Controls }) {
     <TooltipProvider delayDuration={300}>
       <aside id="side" className="flex w-[300px] flex-none flex-col gap-5 overflow-auto rounded-2xl border bg-card p-5 text-card-foreground shadow-2xl max-h-[calc(100vh-48px)] max-[999px]:max-h-none max-[999px]:w-[min(560px,94vw)]">
         <Button asChild variant="ghost" size="sm" className="-ml-2 self-start text-muted-foreground">
-          <Link href="/"><ArrowLeft /> {UI.templates}</Link>
+          <Link href="/" prefetch={false}><ArrowLeft /> {UI.templates}</Link>
         </Button>
 
         {c.kind === 'film' ? (
