@@ -96,12 +96,17 @@ export default function Landing() {
           <p className="mt-2 text-soft">a .fit file, or the .zip from Garmin Connect</p>
         </div>
       </div>
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 pt-6">
-        {/* terraink.space is a different zone, so a plain <a> rather than <Link> */}
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 pt-8">
+        {/* the landing and /maps are a different zone, so plain <a> rather than <Link> */}
         <a href="https://terraink.space/" className={`flex items-center gap-2.5 font-semibold tracking-tight ${focus}`}>
           <Mark className="h-6 w-9" /> <span>Terra<span className="text-signal">Ink</span> <span className="font-normal text-soft">Runs</span></span>
         </a>
-        <ThemeToggle />
+        {/* same nav as terraink.space: Maps, Runs, then the shared theme toggle */}
+        <nav className="flex items-center gap-6 font-mono text-[11px] uppercase tracking-[0.2em] text-soft">
+          <a href="https://terraink.space/maps" className={`transition-colors hover:text-paper ${focus}`}>Maps</a>
+          <Link href="/" aria-current="page" className={`text-paper ${focus}`}>Runs</Link>
+          <ThemeToggle />
+        </nav>
       </header>
 
       <main className="mx-auto max-w-6xl px-6 pb-24">
