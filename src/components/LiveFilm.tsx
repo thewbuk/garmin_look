@@ -24,7 +24,7 @@ export default function LiveFilm({ still, alt }: { still: { light: StaticImageDa
     let film: Film | undefined, io: IntersectionObserver | undefined;
     import('@/templates/film').then(mod => {
       if (ac.signal.aborted || !ref.current) return;
-      film = mod.mount(ref.current, ac.signal, at.current != null ? { t: at.current, playing: true } : undefined, { look: theme === 'light' ? 'paper' : 'night' }) as Film;
+      film = mod.mount(ref.current, ac.signal, at.current != null ? { t: at.current, playing: true } : undefined, { look: theme === 'light' ? 'terracotta' : 'midnight_blue' }) as Film;
       io = new IntersectionObserver(([e]) => film?.controls.play(e.isIntersecting)); io.observe(ref.current);
       setLive(true);
     });

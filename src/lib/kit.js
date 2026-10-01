@@ -182,12 +182,13 @@ export function words(RUN, F) {
 }
 
 const ZONES_DARK = ['#8A9BA8', '#8A9BA8', '#4FA3E0', '#6CC24A', '#F5A623', '#E5484D'], ZONES_LIGHT = ['#9AA7B0', '#9AA7B0', '#2F86C8', '#4FA832', '#E8920C', '#D6353A'];
+/* The five looks are TerraInk themes (terraink-mobile/app/src/data/themes.json): same names, same colours as the map posters. */
 export const LOOKS = {
-  night: { name: 'Night', dark: true, bg: '#0B1110', bg2: '#18231f', edge: '#070b0a', panel: '#131C19', line: '#24312C', fg: '#EEF1E7', soft: '#93A29B', accent: '#7FB069', signal: '#FF6B35', zones: ZONES_DARK },
-  ocean: { name: 'Ocean', dark: true, bg: '#0A1122', bg2: '#16224A', edge: '#050913', panel: '#111B33', line: '#243258', fg: '#E8EEFB', soft: '#8E9CC0', accent: '#8AB8FF', signal: '#FFB23F', zones: ZONES_DARK },
-  ember: { name: 'Ember', dark: true, bg: '#160E0B', bg2: '#2C1812', edge: '#0B0605', panel: '#211410', line: '#3D261E', fg: '#F8ECE4', soft: '#B79D90', accent: '#F2A65A', signal: '#FF5A36', zones: ZONES_DARK },
-  paper: { name: 'Paper', dark: false, bg: '#F1EFE7', bg2: '#F7F5EF', edge: '#E6E3D8', panel: '#E7E4D9', line: '#D9D6CB', fg: '#16201C', soft: '#6B756F', accent: '#3F6B3A', signal: '#E5541F', zones: ZONES_LIGHT },
-  snow: { name: 'Snow', dark: false, bg: '#FFFFFF', bg2: '#FFFFFF', edge: '#EDF0F3', panel: '#F1F3F5', line: '#E1E5EA', fg: '#0E1116', soft: '#687180', accent: '#1F6FEB', signal: '#F0503C', zones: ZONES_LIGHT },
+  midnight_blue: { name: 'Midnight Blue', dark: true, bg: '#0A1628', bg2: '#0F2235', edge: '#061020', panel: '#0F2235', line: '#1E3450', fg: '#F3EBD8', soft: '#97A3B6', accent: '#D6B352', signal: '#FF5F1F', zones: ZONES_DARK },
+  heatwave: { name: 'Heatwave', dark: true, bg: '#1C0E09', bg2: '#381A10', edge: '#0E0604', panel: '#2C140C', line: '#4A2618', fg: '#FFEBC9', soft: '#C29C7E', accent: '#FFD78A', signal: '#FF5F1F', zones: ZONES_DARK },
+  neon: { name: 'Neon', dark: true, bg: '#0D0D1A', bg2: '#17172A', edge: '#080815', panel: '#141426', line: '#27274A', fg: '#E8FFFF', soft: '#8C8CB4', accent: '#00FFFF', signal: '#FF00F0', zones: ZONES_DARK },
+  terracotta: { name: 'Terracotta', dark: false, bg: '#F5EDE4', bg2: '#FAF5EF', edge: '#E8E0D0', panel: '#EDE3D7', line: '#DDD0C0', fg: '#2E1A0E', soft: '#8A6E5C', accent: '#A0522D', signal: '#E8531A', zones: ZONES_LIGHT },
+  coral: { name: 'Coral', dark: false, bg: '#F3E1DA', bg2: '#F8EBE6', edge: '#EACFC6', panel: '#EBD3CA', line: '#DFC0B5', fg: '#4A1F1A', soft: '#8E5E56', accent: '#B9473A', signal: '#E0662F', zones: ZONES_LIGHT },
 };
 const LOOK_KEY = 'garminLook.look';
 const savedLook = () => { try { return localStorage.getItem(LOOK_KEY); } catch { return null; } };

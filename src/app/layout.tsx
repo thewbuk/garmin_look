@@ -6,7 +6,7 @@ import './globals.css';
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Run films · turn a run into a film',
+  title: 'TerraInk Runs · turn a run into a film',
   description: 'Drop the FIT file your watch recorded and get a film, a story, a square, a poster or a print drawn from the real data. Everything runs in your browser.',
 };
 

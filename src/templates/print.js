@@ -12,7 +12,7 @@ export function mount(root, signal, resume, embed) {
 
 function draw(root, signal, resume, embed, scope) {
   root.innerHTML = '<svg id="print" class="block rounded-[6px] shadow-[0_24px_80px_#000c] aspect-[3/4] h-[min(calc(100vh_-_48px),calc((100vw_-_372px)*4/3))] max-[999px]:h-[min(72vh,calc(94vw*4/3))]" viewBox="0 0 1200 1600" xmlns="http://www.w3.org/2000/svg" font-family="Inter, \'Helvetica Neue\', Arial, sans-serif"></svg>';
-  const { h, poly } = Kit, G = Kit.wear(root, 'night', 'ink', embed?.look).L;
+  const { h, poly } = Kit, G = Kit.wear(root, 'midnight_blue', 'ink', embed?.look).L;
   const RUN = Runs.current('print'), M = RUN.meta, T = RUN.track, N = T.x.length, DIST = M.distance, DUR = M.elapsed, KMS = DIST / Kit.unitM(), HR = M.hasHr;
   const F = Kit.fmt(RUN), { hms, pace, int, dec, clock, zone } = F, WD = Kit.words(RUN, F), UI = WD.ui;
   const TX =

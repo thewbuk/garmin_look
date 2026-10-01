@@ -14,7 +14,7 @@ function draw(root, signal, resume, embed, scope) {
   const { h, poly, LAYER, FB, VIEWBOX } = Kit;
   const EYEBROW = 'eyebrow text-[19px]/[1.25] font-medium tracking-[.16em] text-(color:--moss) uppercase', HIDE = 'absolute opacity-0';
   const ENTER = cubicBezier(0.16, 1, 0.3, 1), EXIT = 'in(2)', MOVE = 'inOut(3)', TOTAL = 17000, REPLAY0 = 3600, REPLAY_D = 7400;
-  const { L, C, ZC } = Kit.wear(root, 'paper', 'paper', embed?.look);
+  const { L, C, ZC } = Kit.wear(root, 'terracotta', 'paper', embed?.look);
   const RUN = Runs.current('square'), M = RUN.meta, T = RUN.track, N = T.x.length, DIST = M.distance, DUR = M.elapsed, KMS = DIST / Kit.unitM(), HR = M.hasHr;
   const F = Kit.fmt(RUN), { hms, pace, int, dec, clock, zone } = F, WD = Kit.words(RUN, F), { BPM } = WD;
   if (!HR) ZC[0] = C.moss;

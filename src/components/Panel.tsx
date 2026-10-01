@@ -11,7 +11,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
-type Look = { name: string; bg: string; line: string; signal: string };
+type Look = { name: string; bg: string; line: string; accent: string };
 type Words = Record<string, string>;
 type State = { t?: number; playing?: boolean; sound?: boolean; exporting?: boolean; note: string; [k: string]: unknown };
 type Weather = { text?: string; temp?: number; rain?: boolean; snow?: boolean };
@@ -153,7 +153,7 @@ export default function Panel({ c }: { c: Controls }) {
                   <button type="button" role="radio" aria-checked={k === c.look} aria-label={L.name} onClick={() => k !== c.look && c.setLook(k)}
                     className={cn('size-8 rounded-full border ring-offset-2 ring-offset-card transition-transform outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring',
                       k === c.look && 'ring-2 ring-foreground')}
-                    style={{ background: `radial-gradient(circle, ${L.signal} 0 5px, ${L.bg} 6px)`, borderColor: L.line }} />
+                    style={{ background: `radial-gradient(circle, ${L.accent} 0 5px, ${L.bg} 6px)`, borderColor: L.line }} />
                 </TooltipTrigger>
                 <TooltipContent>{L.name}</TooltipContent>
               </Tooltip>

@@ -11,7 +11,7 @@ export function mount(root, signal, resume, embed) {
 function draw(root, signal, resume, embed, scope) {
   root.innerHTML = '<svg id="poster" class="block rounded-[6px] shadow-[0_24px_80px_#000c] aspect-[4/5] h-[min(calc(100vh_-_48px),calc((100vw_-_372px)*1.25))] max-[999px]:h-[min(72vh,calc(94vw*1.25))]" viewBox="0 0 1200 1500" xmlns="http://www.w3.org/2000/svg" font-family="Inter, \'Helvetica Neue\', Arial, sans-serif"></svg>';
   const asvg = svg, { h, poly } = Kit;
-  const { L, C, ZC } = Kit.wear(root, 'paper', 'paper', embed?.look);
+  const { L, C, ZC } = Kit.wear(root, 'terracotta', 'paper', embed?.look);
   const RUN = Runs.current('poster'), M = RUN.meta, T = RUN.track, N = T.x.length, DIST = M.distance, DUR = M.elapsed, KMS = DIST / Kit.unitM(), HR = M.hasHr;
   const F = Kit.fmt(RUN), { hms, pace, int, dec, clock, zone } = F, WD = Kit.words(RUN, F), UI = WD.ui;
   if (!HR) ZC[0] = C.moss;

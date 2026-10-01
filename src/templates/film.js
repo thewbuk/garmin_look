@@ -17,7 +17,7 @@ function draw(root, signal, resume, embed, scope) {
   const HALO = 'halo [paint-order:stroke] [stroke-linejoin:round] stroke-(--ink)', GROW_X = '[transform-box:fill-box] origin-left', VBAR = '[transform-box:fill-box] origin-bottom';
   const ENTER = cubicBezier(0.16, 1, 0.3, 1), EXIT = 'in(2)', MOVE = 'inOut(3)', TOTAL = 60000;
   const REPLAY0 = 7000, REPLAY_D = 21000;
-  const { L, C, ZC } = Kit.wear(root, 'night', 'ink', embed?.look);
+  const { L, C, ZC } = Kit.wear(root, 'midnight_blue', 'ink', embed?.look);
   const RUN = Runs.current('film'), M = RUN.meta, T = RUN.track, N = T.x.length, DIST = M.distance, DUR = M.elapsed, KMS = DIST / Kit.unitM(), HR = M.hasHr;
   const F = Kit.fmt(RUN), { hms, pace, int, dec, clock, zone, startSec } = F, WD = Kit.words(RUN, F), { BPM } = WD;
   if (!HR) ZC[0] = C.moss; // no heart-rate data: one colour
@@ -210,7 +210,7 @@ function draw(root, signal, resume, embed, scope) {
   const [HC, HH, HD] = [c1, h1, d1].map(el => [...el.querySelectorAll('[data-word]')]);
 
   const S = { p: 0 };
-  const SKY = [[7, [13, 22, 27]], [12.5, [12, 20, 16]], [18.6, [27, 19, 12]]]; // [hour of day, rgb tint]
+  const SKY = [[7, [12, 25, 44]], [12.5, [10, 22, 40]], [18.6, [30, 22, 34]]]; // [hour of day, rgb tint]
   let lastP = -1, lastHr = M.avgHr || 140;
   function render() {
     if (S.p === lastP) return; lastP = S.p;
@@ -228,7 +228,7 @@ function draw(root, signal, resume, embed, scope) {
     E.km.textContent = dec(d / F.U); E.mi.textContent = F.MI ? dec(d / 1000) + ' km' : dec(d / 1609.344) + ' mi'; E.el.textContent = hms(te); E.clk.textContent = clock(te);
     E.up.textContent = int(F.ht(up)); E.altv.textContent = Math.round(F.ht(a)); E.pc.textContent = v > 0.6 ? pace(F.U / v) : '–';
     if (HR) { E.bpm.textContent = Math.round(b); E.zchip.textContent = 'Z' + z; E.zchip.style.background = ZC[z]; lastHr = b; }
-    if (L.key !== 'night') return;
+    if (L.key !== 'midnight_blue') return;
     const hr = (startSec + te) / 3600; let k = 0; while (k < SKY.length - 2 && hr > SKY[k + 1][0]) k++;
     const g = Math.min(1, Math.max(0, (hr - SKY[k][0]) / (SKY[k + 1][0] - SKY[k][0]))), c = SKY[k][1].map((q, n) => Math.round(q + (SKY[k + 1][1][n] - q) * g));
     sky.style.background = `radial-gradient(120% 90% at 30% 40%, rgb(${c.map(q => q + 14)}) 0%, rgb(${c}) 55%, ${L.edge} 100%)`;

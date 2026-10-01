@@ -21,7 +21,7 @@ export default function RunPreview({ template }: { template: Template }) {
     TEMPLATES[template]().then(mod => {
       if (ac.signal.aborted || !ref.current) return;
       const at = AT[template];
-      m = mod.mount(ref.current, ac.signal, at != null ? { t: at, playing: false } : undefined, { look: theme === 'light' ? 'paper' : 'night' });
+      m = mod.mount(ref.current, ac.signal, at != null ? { t: at, playing: false } : undefined, { look: theme === 'light' ? 'terracotta' : 'midnight_blue' });
     });
     return () => { ac.abort(); m?.destroy(); };
   }, [template, theme]);

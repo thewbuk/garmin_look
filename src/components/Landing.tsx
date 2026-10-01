@@ -97,9 +97,10 @@ export default function Landing() {
         </div>
       </div>
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 pt-6">
-        <Link href="/" className={`flex items-center gap-2.5 font-semibold tracking-tight ${focus}`}>
-          <Mark className="h-6 w-9" /> Run films
-        </Link>
+        {/* terraink.space is a different zone, so a plain <a> rather than <Link> */}
+        <a href="https://terraink.space/" className={`flex items-center gap-2.5 font-semibold tracking-tight ${focus}`}>
+          <Mark className="h-6 w-9" /> <span>Terra<span className="text-signal">Ink</span> <span className="font-normal text-soft">Runs</span></span>
+        </a>
         <ThemeToggle />
       </header>
 

@@ -1,4 +1,4 @@
-# Run films
+# TerraInk Runs
 
 Turn a run into a film. Drop the `.fit` file your watch recorded (or the `.zip` Garmin Connect
 exports) and pick a template; it is drawn from the real data: the route, pace, heart rate, climbing,
@@ -12,7 +12,7 @@ splits and weather. The file is read in your browser and never uploaded.
 | Poster | 4:5 PNG |
 | Print | 3:4 PNG for the wall |
 
-Every template has five colour looks, metric or imperial units, and weather (clear, cloud, rain,
+Every template has five colour looks (TerraInk themes: Midnight Blue, Heatwave, Neon, Terracotta, Coral), metric or imperial units, and weather (clear, cloud, rain,
 snow) drawn over the whole picture. Videos export as MP4 (WebM where the browser can't record MP4);
 this records the tab, so it needs Chrome or Edge on a desktop. PNGs work in any browser.
 
@@ -20,9 +20,11 @@ this records the tab, so it needs Chrome or Edge on a desktop. PNGs work in any 
 
 ```
 pnpm install
-pnpm dev          # http://localhost:3000
+pnpm dev          # http://localhost:3000/run
 pnpm build
 ```
+
+It lives at **terraink.space/run**: `basePath` is `/run`, and the TerraInk landing (`thewbuk/terraink-mobile`, `web/`) rewrites `/run/*` to this deployment (its `RUN_ORIGIN`).
 
 Next.js 16 (App Router), Tailwind CSS 4, shadcn/ui, anime.js. Every page is static; there is no server
 code, so it deploys anywhere that serves a Next.js static build.
