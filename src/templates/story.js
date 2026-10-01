@@ -26,7 +26,7 @@ function draw(root, signal, resume, embed, scope) {
   const SEGS = []; for (let i = 0, z = zone(T.h[0]), i0 = 0; i <= N; i++) { const zi = i < N ? zone(T.h[i]) : -1; if (zi !== z) { SEGS.push({ i0, i1: Math.min(N - 1, i), z }); i0 = i; z = zi; } }
 
   const art = add(h('svg', { id: 'art', class: `${LAYER} pointer-events-none overflow-visible [&_text]:font-display`, viewBox: '0 0 1080 1920' }));
-  const WX = Kit.weatherLayer(M.weather, 1080, 1920, L.dark); add(WX.el);
+  const WX = Kit.weatherLayer(Kit.skyOf(M, embed), 1080, 1920, L.dark); add(WX.el);
   art.appendChild(h('defs', {},
     h('radialGradient', { id: 'gDot' }, h('stop', { offset: 0, 'stop-color': C.signal, 'stop-opacity': 0.55 }), h('stop', { offset: 1, 'stop-color': C.signal, 'stop-opacity': 0 })),
     h('clipPath', { id: 'cStrip' }, h('rect', { id: 'cStripR', x: 90, y: 1690, width: 0, height: 170 }))));
@@ -49,7 +49,7 @@ function draw(root, signal, resume, embed, scope) {
   const curDot = strip.querySelector('#curDot'), cStripR = art.querySelector('#cStripR');
 
   const ui = add(h('div', { id: 'ui', class: `${LAYER} pointer-events-none` })), U = el => ui.appendChild(el);
-  const ti = U(h('div', { id: 'ti', class: `${HIDE} top-[190px] left-[90px] w-[900px]` }, h('div', { class: EYEBROW, text: [F.DAY, M.place, Kit.weatherLine(M.weather, F)].filter(Boolean).join(' · ') }),
+  const ti = U(h('div', { id: 'ti', class: `${HIDE} top-[190px] left-[90px] w-[900px]` }, h('div', { class: EYEBROW, text: [F.DAY, M.place, Kit.weatherLine(Kit.skyOf(M, embed), F)].filter(Boolean).join(' · ') }),
     h('h1', { class: `mt-[28px] font-semibold tracking-[-.035em] ${WD.NAME.length > 18 ? 'text-[92px]/none' : 'text-[128px]/none'}` }, ...Kit.wordEls(WD.NAME.split(' '))), h('p', { class: 'mt-[30px] text-[44px]/[1.25] font-normal text-(color:--soft)', text: TX.tagline })));
   const head = U(h('div', { id: 'top', class: `${HIDE} top-[120px] left-[90px] w-[900px]` }, h('div', { class: EYEBROW, text: WD.TITLE }),
     h('div', { id: 'dist', class: 'mt-[6px] flex items-baseline gap-[18px]' }, h('b', { id: 'km', class: 'text-[250px]/none font-semibold tracking-[-.05em]', text: dec(0) }), h('small', { class: 'text-[64px]/none font-medium text-(color:--soft)', text: F.DU }))));

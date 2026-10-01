@@ -60,10 +60,12 @@ function sprite(stops, size = 128) {
 function scene(W, w, h, dark) {
   const kind = sky(W), r = seeded(7), wind = Math.min(1.4, (W?.wind ?? 8) / 20), temp = W?.temp ?? 12, m = Math.min(w, h), area = w * h;
   const tint = temp <= 3 ? `rgba(150,190,255,${dark ? 0.07 : 0.08})` : temp >= 25 ? `rgba(255,170,90,${dark ? 0.06 : 0.07})` : null;
-  // [share, length, length spread, width, opacity, speed px/s]
-  const DEPTHS = [[0.5, 18, 8, 0.7, 0.07, 1200], [0.33, 34, 12, 1, 0.15, 1650], [0.17, 66, 18, 1.4, 0.34, 2200]];
-  const drops = kind === 'rain' ? DEPTHS.flatMap(([share, len, lv, wd, a, v], d) =>
-    Array.from({ length: Math.round(area / 800 * share) }, () => ({ x: r() * (w + 300), y: r() * h, len: len + r() * lv, wd, a: a * (0.75 + r() * 0.5), v: v * (0.9 + r() * 0.2), d }))) : [];
+  // [count per 10k px², length, length spread, width, opacity, speed px/s]: many faint far drops, a few long bright near ones
+  const DEPTHS = [[2.2, 14, 6, 1, 0.1, 900], [0.9, 30, 10, 1.4, 0.16, 1400], [0.16, 90, 30, 2.2, 0.26, 2100]];
+  const drops = kind === 'rain' ? DEPTHS.flatMap(([n, len, lv, wd, a, v], d) =>
+    Array.from({ length: Math.round(area / 10000 * n) }, () => ({ x: r() * (w + 200), y: r() * h, len: len + r() * lv, wd, a: a * (0.6 + r() * 0.8), v: v * (0.9 + r() * 0.2), d }))) : [];
+  // where drops land: a ripple each, on its own 0.4–1.2 s loop, in the bottom fifth
+  const ripples = kind === 'rain' ? Array.from({ length: Math.round(w / 40) }, () => ({ x: r() * w, y: h * (0.82 + r() * 0.17), p: r(), T: 0.4 + r() * 0.8 })) : [];
   const nFlakes = Math.round(area / 6700), nNear = Math.max(3, Math.round(area / 350000)), bunches = Array.from({ length: 7 }, () => [r() * w, r() * h]);
   const flakes = kind === 'snow' ? Array.from({ length: nFlakes }, (_, k) => { const z = 0.3 + r() * 0.7, near = k < nNear, b = bunches[k % 7], loose = r() < 0.45;
     return { x: loose ? r() * w : b[0] + (r() - 0.5) * w * 0.35, y: loose ? r() * h : b[1] + (r() - 0.5) * h * 0.45, z, p: r() * 6.28,
@@ -74,11 +76,17 @@ function scene(W, w, h, dark) {
       puffs: Array.from({ length: 11 + Math.floor(r() * 5) }, () => { const u = (r() - 0.5) * 0.75; return { dx: u * cw, dy: (r() - 0.5) * cw * 0.05 - (0.14 - u * u) * cw * 0.25, rad: cw * (0.04 + r() * 0.08) }; }) }; });
   const rainy = kind === 'rain', base = rainy ? (dark ? '96,110,118' : '120,116,108') : (dark ? '150,162,158' : '150,146,138'), lit = rainy ? (dark ? '160,174,180' : '184,180,172') : (dark ? '236,241,238' : '184,180,172');
   const ba = rainy ? (dark ? 0.14 : 0.1) : (dark ? 0.12 : 0.09), la = rainy ? (dark ? 0.1 : 0.05) : (dark ? 0.22 : 0.06), sc = dark ? '255,255,255' : '84,108,132';
-  const S = { kind, tint, dark, w, h, m, wind, slant: 0.1 + wind * 0.2, drops, flakes, clouds, rc: dark ? '205,218,230' : '60,84,108' };
+  const S = { kind, tint, dark, w, h, m, wind, slant: 0.03 + wind * 0.07, drops, ripples, flakes, clouds, rc: dark ? '205,218,230' : '60,84,108' };
   if (clouds.length) Object.assign(S, {
     bank: sprite([[0, `rgba(${base},${ba * 1.1})`], [1, `rgba(${base},0)`]]),
     puff: sprite([[0, `rgba(${base},${ba})`], [0.6, `rgba(${base},${ba * 0.55})`], [1, `rgba(${base},0)`]]),
     lit: sprite([[0, `rgba(${lit},${la})`], [1, `rgba(${lit},0)`]]) });
+  if (drops.length) {   // one soft streak, clear at the tail and brightest at the head, stretched per drop
+    const rc = dark ? '214,226,238' : '52,74,98', c = Object.assign(document.createElement('canvas'), { width: 8, height: 128 }), g = c.getContext('2d');
+    const v = g.createLinearGradient(0, 0, 0, 128); v.addColorStop(0, `rgba(${rc},0)`); v.addColorStop(0.75, `rgba(${rc},.55)`); v.addColorStop(1, `rgba(${rc},1)`);
+    g.fillStyle = v; g.fillRect(3, 0, 2, 128); g.globalAlpha = 0.35; g.fillRect(2, 0, 4, 128);
+    Object.assign(S, { streak: c, rc });
+  }
   if (flakes.length) Object.assign(S, {
     flake: sprite([[0, `rgba(${sc},1)`], [0.25, `rgba(${sc},.55)`], [1, `rgba(${sc},0)`]], 32),
     bigFlake: sprite([[0, `rgba(${sc},1)`], [0.2, `rgba(${sc},.6)`], [1, `rgba(${sc},0)`]], 64) });
@@ -96,9 +104,9 @@ function paint(g, S, t) {
   const { w, h, m, dark } = S;
   g.clearRect(0, 0, w, h);
   if (S.tint) { g.fillStyle = S.tint; g.fillRect(0, 0, w, h); }
-  if (S.kind === 'rain') { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, dark ? 'rgba(4,10,16,.5)' : 'rgba(56,72,90,.22)'); gr.addColorStop(0.45, dark ? 'rgba(4,10,16,.2)' : 'rgba(56,72,90,.08)'); gr.addColorStop(1, dark ? 'rgba(4,10,16,.1)' : 'rgba(56,72,90,.03)');
-    g.fillStyle = gr; g.fillRect(0, 0, w, h);
-    const mist = g.createLinearGradient(0, h * 0.72, 0, h); mist.addColorStop(0, 'rgba(210,222,232,0)'); mist.addColorStop(1, dark ? 'rgba(210,222,232,.12)' : 'rgba(255,255,255,.2)'); g.fillStyle = mist; g.fillRect(0, h * 0.72, w, h * 0.28); }
+  if (S.kind === 'rain') { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, dark ? 'rgba(4,10,16,.28)' : 'rgba(56,72,90,.12)'); gr.addColorStop(0.5, 'rgba(0,0,0,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h * 0.5);
+    const mist = g.createLinearGradient(0, h * 0.75, 0, h); mist.addColorStop(0, 'rgba(210,222,232,0)'); mist.addColorStop(1, dark ? 'rgba(210,222,232,.07)' : 'rgba(255,255,255,.14)'); g.fillStyle = mist; g.fillRect(0, h * 0.75, w, h * 0.25); }
   if (S.kind === 'cloud') { const gr = g.createLinearGradient(0, 0, 0, h * 0.5); gr.addColorStop(0, dark ? 'rgba(170,182,178,.07)' : 'rgba(120,130,138,.1)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h * 0.5); }
   for (const c of S.clouds) {
     const x = wrap(c.x0 + t * c.v * (0.6 + S.wind), w + c.cw * 1.4) - c.cw * 0.7, y = c.y0 + Math.sin(t * 0.08 + c.k) * 6, R = c.cw * 0.45;
@@ -119,14 +127,17 @@ function paint(g, S, t) {
       const gx = x + (w / 2 - x) * k, gy = y + (h / 2 - y) * k, gg = g.createRadialGradient(gx, gy, 0, gx, gy, m * rad);
       gg.addColorStop(0, `rgba(${col},${a})`); gg.addColorStop(1, `rgba(${col},0)`); g.fillStyle = gg; g.beginPath(); g.arc(gx, gy, m * rad, 0, 6.2832); g.fill(); } }
   if (S.drops.length) {
-    const gust = 0.8 + 0.2 * Math.sin(t * 0.5) * Math.sin(t * 0.21 + 1); g.lineCap = 'round';
+    const gust = 0.85 + 0.15 * Math.sin(t * 0.5) * Math.sin(t * 0.21 + 1), ang = Math.atan(S.slant);
+    g.save(); g.translate(w / 2, h / 2); g.rotate(ang); g.translate(-w / 2, -h / 2);   // fall along the slant; drift is in the rotation
     for (const d of S.drops) {
-      const y = wrap(d.y + t * d.v, h + d.len * 2) - d.len, x = wrap(d.x - t * d.v * S.slant, w + 300) - 150, a = d.a * gust, x0 = x + d.len * S.slant, y0 = y - d.len;
-      g.lineWidth = d.wd;
-      if (d.d === 2) {   // near drops: a faint tail, a bright head
-        g.strokeStyle = `rgba(${S.rc},${a * 0.3})`; g.beginPath(); g.moveTo(x0, y0); g.lineTo((x0 + x) / 2, (y0 + y) / 2); g.stroke();
-        g.strokeStyle = `rgba(${S.rc},${a})`; g.beginPath(); g.moveTo((x0 + x) / 2, (y0 + y) / 2); g.lineTo(x, y); g.stroke();
-      } else { g.strokeStyle = `rgba(${S.rc},${a})`; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x, y); g.stroke(); } } }
+      const y = wrap(d.y + t * d.v, h + d.len + 120) - d.len - 60, x = wrap(d.x, w + 200) - 100;
+      g.globalAlpha = d.a * gust; g.drawImage(S.streak, x - d.wd * 2, y, d.wd * 4, d.len); }
+    g.restore();
+    g.strokeStyle = `rgb(${S.rc})`; g.lineWidth = 1;
+    for (const p of S.ripples) {
+      const c = t / p.T + p.p, k = wrap(c, 1), x = wrap(p.x + Math.floor(c) * w * 0.618, w), rad = 2 + k * 14 * (p.y / h);   // each ripple lands somewhere new
+      g.globalAlpha = 0.22 * (1 - k) * (1 - k); g.beginPath(); g.ellipse(x, p.y, rad, rad * 0.28, 0, 0, 6.2832); g.stroke(); }
+    g.globalAlpha = 1; }
   for (const f of S.flakes) {
     const y = wrap(f.y + t * (22 + 55 * f.z) * (f.near ? 1.6 : 1), h + 40) - 20, x = wrap(f.x - t * S.wind * 40 * f.z + Math.sin(t * (0.6 + f.z) + f.p) * 22 * f.z, w + 40) - 20, R = f.rad * (f.near ? 1.6 : 2.2);
     g.globalAlpha = f.a; g.drawImage(f.near ? S.bigFlake : S.flake, x - R, y - R * 1.3, R * 2, R * 2.6); }
@@ -143,6 +154,8 @@ export function weatherSvg(W, w, ht, dark) {
   const cv = Object.assign(document.createElement('canvas'), { width: w, height: ht }); paint(cv.getContext('2d'), S, 12);
   return h('image', { href: cv.toDataURL('image/png'), width: w, height: ht, 'pointer-events': 'none' });
 }
+/* embed.sky: draw this sky instead of the run's (the home page turns through several) */
+export const skyOf = (M, embed) => (embed?.sky ? { ...M.weather, ...embed.sky } : M.weather);
 export const weatherControl = M => ({ now: M.weather || null, set: Runs.setWeather });
 
 /* RUN.splits are per km; in miles they are re-measured from the track. `km` is in the unit, pace stays s/km. */

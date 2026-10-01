@@ -26,7 +26,7 @@ function draw(root, signal, resume, embed, scope) {
   const LANDMARKS = [[96, 'Big Ben', 'Big Ben', 0], [330, 'the Eiffel Tower', 'wieża Eiffla', 0], [1085, 'Snowdon', 'Snowdon', 1], [1345, 'Ben Nevis', 'Ben Nevis', 1], [2499, 'Rysy', 'Rysy', 1], [4808, 'Mont Blanc', 'Mont Blanc', 1], [8849, 'Everest', 'Everest', 1]];
   const round = l => { const t = M.gain / l[0]; return Math.round(t) <= 5 && Math.abs(t - Math.round(t)) < 0.06; };
   const fits = LANDMARKS.filter(l => M.gain >= l[0] * 0.97), LM = fits.filter(round).pop() || fits.pop() || null, lmT = LM ? M.gain / LM[0] : 0, whole = LM && round(LM) ? Math.round(lmT) : 0;
-  const FLAT = M.gain < 50, W = M.weather, { splits: SPLITS, size: SK } = Kit.splits(RUN, F), UNITW = F.MI ? ['mile', 'miles'] : ['kilometre', 'kilometres'];
+  const FLAT = M.gain < 50, W = Kit.skyOf(M, embed), { splits: SPLITS, size: SK } = Kit.splits(RUN, F), UNITW = F.MI ? ['mile', 'miles'] : ['kilometre', 'kilometres'];
   const TX = {
     en: () => { const times = whole ? ['', 'once', 'twice'][whole] || `${whole} times` : `${dec(lmT)} times`; return {
       tagline: FLAT ? `${dec(KMS)} ${F.DU}, almost flat.` : `${dec(KMS)} ${F.DU} and ${int(F.ht(M.gain))} ${F.HU} of climbing.`,
@@ -60,7 +60,7 @@ function draw(root, signal, resume, embed, scope) {
   const sky = add(h('div', { id: 'sky', class: LAYER, style: `background:radial-gradient(120% 90% at 30% 40%, ${L.bg2} 0%, ${L.bg} 55%, ${L.edge} 100%)` }));
 
   const art = add(h('svg', { id: 'art', class: `${LAYER} pointer-events-none overflow-visible [&_text]:font-display`, viewBox: '0 0 1600 900' }));
-  const WX = Kit.weatherLayer(M.weather, 1600, 900, L.dark); add(WX.el);
+  const WX = Kit.weatherLayer(Kit.skyOf(M, embed), 1600, 900, L.dark); add(WX.el);
   art.appendChild(h('defs', {},
     h('linearGradient', { id: 'gArea', x1: 0, y1: 0, x2: 0, y2: 1 }, h('stop', { offset: 0, 'stop-color': C.moss, 'stop-opacity': 0.42 }), h('stop', { offset: 1, 'stop-color': C.moss, 'stop-opacity': 0.02 })),
     h('radialGradient', { id: 'gDot' }, h('stop', { offset: 0, 'stop-color': C.signal, 'stop-opacity': 0.55 }), h('stop', { offset: 1, 'stop-color': C.signal, 'stop-opacity': 0 })),

@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import * as Runs from '@/lib/runs';
@@ -9,8 +8,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
-import LiveFilm from '@/components/LiveFilm';
-import RunPreview from '@/components/RunPreview';
+import Live from '@/components/Live';
 import type { Template } from '@/components/Player';
 // imported (not /public) so each preview gets a hashed URL and stale caches can't serve an old one
 import filmLight from '@/assets/previews/film-light.webp';
@@ -25,6 +23,15 @@ import printLight from '@/assets/previews/print-light.webp';
 import printDark from '@/assets/previews/print-dark.webp';
 
 type Summary = { mine: boolean; name: string; title: string; line: string; route: string; profile: string; stats: [string, string | number, string][] };
+
+// how each card sizes its template, and where a moving one starts
+const CARD: Record<Template, { box: string; stage?: string; at?: number }> = {
+  film: { box: 'aspect-video w-full', at: 27600 },
+  story: { box: 'aspect-[9/16] h-full', at: 12700 },
+  square: { box: 'aspect-square h-full', at: 10700 },
+  poster: { box: 'aspect-[4/5] h-full', stage: '[&_svg]:!h-full [&_svg]:!w-full' },
+  print: { box: 'aspect-[3/4] h-full', stage: '[&_svg]:!h-full [&_svg]:!w-full' },
+};
 
 const TEMPLATES = [
   { href: '/film', name: 'Film', format: '60 s · 16:9 · MP4', img: { light: filmLight, dark: filmDark }, text: 'The route draws itself, the run replays on the clock, then the climbing, heart rate, splits and the finish time.' },
@@ -138,7 +145,7 @@ export default function Landing() {
           </div>
           <Link href="/film" aria-label="Watch the film of the sample run" className={`group relative block overflow-hidden rounded-xl ring-1 ring-line ${focus}`}>
             <div className="transition-transform duration-500 group-hover:scale-[1.015] motion-safe:animate-[rise_.9s_cubic-bezier(.16,1,.3,1)_both]">
-              <LiveFilm still={{ light: filmLight, dark: filmDark }} alt="A film of a run: the route in heart-rate colours, with distance, time and heart rate" />
+              <Live template="film" priority className="aspect-video" still={{ light: filmLight, dark: filmDark }} alt="A film of a run: the route in heart-rate colours, with distance, time and heart rate" />
             </div>
           </Link>
         </section>
@@ -185,13 +192,12 @@ export default function Landing() {
           {run.mine && <p className="mt-1.5 text-soft">Every preview below is drawn from your run. Open one to play it, change its look and export it.</p>}
         </div>
         <div className="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-6">
-          {TEMPLATES.map(t => (
+          {TEMPLATES.map(t => { const id = t.href.slice(1) as Template; return (
             <Link key={t.href} href={t.href} className={`group flex flex-col ${focus} rounded-xl ${t.format.includes('PNG') ? 'lg:col-span-3' : 'lg:col-span-2'}`}>
               <div className="flex h-72 items-center justify-center rounded-xl bg-peat p-5 ring-1 ring-line transition group-hover:ring-signal">
-                {run.mine ? <RunPreview template={t.href.slice(1) as Template} /> : <>
-                  <Image src={t.img.light} alt={`${t.name} template`} className="max-h-full w-auto rounded-md object-contain shadow-2xl dark:hidden" />
-                  <Image src={t.img.dark} alt={`${t.name} template`} className="hidden max-h-full w-auto rounded-md object-contain shadow-2xl dark:block" />
-                </>}
+                {/* keyed on mine: a loaded run shows no sample stills */}
+                <Live key={String(run.mine)} template={id} at={CARD[id].at} still={run.mine ? undefined : t.img} alt={`${t.name} template`}
+                  className={`${CARD[id].box} max-h-full max-w-full overflow-hidden rounded-md shadow-2xl`} stage={CARD[id].stage} />
               </div>
               <div className="mt-4 flex items-baseline justify-between gap-3">
                 <b className="text-xl font-semibold tracking-tight">{t.name}</b>
@@ -200,7 +206,7 @@ export default function Landing() {
               <p className="mt-1.5 text-[15px] text-soft text-pretty">{t.text}</p>
               <span className="mt-auto pt-3 font-semibold text-signal">{run.mine ? `Make a ${t.name.toLowerCase()} of your run` : `Open ${t.name.toLowerCase()}`} →</span>
             </Link>
-          ))}
+          ); })}
         </div>
 
       </main>

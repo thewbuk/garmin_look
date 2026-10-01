@@ -28,7 +28,7 @@ function draw(root, signal, resume, embed, scope) {
   const SEGS = []; for (let i = 0, z = zone(T.h[0]), i0 = 0; i <= N; i++) { const zi = i < N ? zone(T.h[i]) : -1; if (zi !== z) { SEGS.push({ i0, i1: Math.min(N - 1, i), z }); i0 = i; z = zi; } }
 
   const art = add(h('svg', { id: 'art', class: `${LAYER} pointer-events-none overflow-visible [&_text]:font-display`, viewBox: '0 0 1080 1080' }));
-  const WX = Kit.weatherLayer(M.weather, 1080, 1080, L.dark); add(WX.el);
+  const WX = Kit.weatherLayer(Kit.skyOf(M, embed), 1080, 1080, L.dark); add(WX.el);
   art.appendChild(h('defs', {}, h('clipPath', { id: 'cBand' }, h('rect', { id: 'cBandR', x: 70, y: 820, width: 0, height: 200 }))));
   const map = art.appendChild(h('g', { id: 'map', class: VIEWBOX }));
   const ghost = map.appendChild(h('path', { id: 'ghost', d: poly(T.x.map((x, i) => [x, T.y[i]])), fill: 'none', stroke: C.ink, 'stroke-opacity': 0.28, 'stroke-width': 4, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
@@ -60,7 +60,7 @@ function draw(root, signal, resume, embed, scope) {
   const vbars = [...bars.querySelectorAll('.vbar')];
 
   const ui = add(h('div', { id: 'ui', class: `${LAYER} pointer-events-none` })), U = el => ui.appendChild(el);
-  const ti = U(h('div', { id: 'ti', class: `${HIDE} top-[300px] left-[70px] w-[400px]` }, h('div', { class: EYEBROW, text: [F.DAY, M.place, Kit.weatherLine(M.weather, F)].filter(Boolean).join(' · ') }),
+  const ti = U(h('div', { id: 'ti', class: `${HIDE} top-[300px] left-[70px] w-[400px]` }, h('div', { class: EYEBROW, text: [F.DAY, M.place, Kit.weatherLine(Kit.skyOf(M, embed), F)].filter(Boolean).join(' · ') }),
     h('h1', { class: `mt-[22px] font-bold tracking-[-.04em] ${WD.NAME.length > 18 ? 'text-[74px]/[.98]' : 'text-[96px]/[.98]'}` }, ...Kit.wordEls(WD.NAME.split(' '))), h('p', { class: 'mt-[26px] text-[32px]/[1.25] font-normal text-(color:--soft)', text: TX.tagline })));
   const head = U(h('div', { id: 'top', class: `${HIDE} top-[90px] left-[70px] w-[400px]` }, h('div', { class: EYEBROW, text: WD.TITLE }),
     h('div', { id: 'dist', class: 'mt-[8px] flex items-baseline gap-[12px]' }, h('b', { id: 'km', class: 'text-[132px]/none font-bold tracking-[-.05em]', text: dec(0) }), h('small', { class: 'text-[40px]/none font-medium text-(color:--soft)', text: F.DU }))));

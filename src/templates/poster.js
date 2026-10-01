@@ -25,8 +25,8 @@ function draw(root, signal, resume, embed, scope) {
   const lines = (text, max) => { const out = ['']; for (const w of text.split(' ')) { if (out[out.length - 1] && (out[out.length - 1] + ' ' + w).length > max) out.push(w); else out[out.length - 1] += (out[out.length - 1] ? ' ' : '') + w; } return out.slice(0, 2); };
   const title = lines(WD.NAME, 19), y0 = 150 + title.length * 96;
 
-  P.append(h('rect', { width: 1200, height: 1500, fill: C.paper }), Kit.weatherSvg(M.weather, 1200, 1500, L.dark),
-    h('text', { class: 'in', x: 80, y: 112, 'font-size': 21, 'font-weight': 500, 'letter-spacing': '.16em', fill: C.moss, text: [F.DATE, M.place, Kit.weatherLine(M.weather, F)].filter(Boolean).join(' · ').toUpperCase() }),
+  P.append(h('rect', { width: 1200, height: 1500, fill: C.paper }), Kit.weatherSvg(Kit.skyOf(M, embed), 1200, 1500, L.dark),
+    h('text', { class: 'in', x: 80, y: 112, 'font-size': 21, 'font-weight': 500, 'letter-spacing': '.16em', fill: C.moss, text: [F.DATE, M.place, Kit.weatherLine(Kit.skyOf(M, embed), F)].filter(Boolean).join(' · ').toUpperCase() }),
     ...title.map((l, k) => h('text', { class: 'in', x: 76, y: 210 + k * 96, 'font-size': 92, 'font-weight': 700, 'letter-spacing': '-.03em', fill: C.ink, text: l })),
     WD.EVENT ? h('text', { class: 'in', x: 80, y: y0 + 8, 'font-size': 30, fill: C.soft, text: WD.EVENT }) : '');
 

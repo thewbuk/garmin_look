@@ -36,7 +36,7 @@ function draw(root, signal, resume, embed, scope) {
 
     const MS = 900 - (title.length - 1) * 76, MX = (1200 - MS) / 2, MY = 110, k = MS / 1000, sw = 5.5 / k;
     P.append(h('defs', {}, h('filter', { id: 'glow', x: '-10%', y: '-10%', width: '120%', height: '120%' }, h('feGaussianBlur', { stdDeviation: 9 / k }))),
-      h('rect', { width: 1200, height: 1600, fill: L.bg }), Kit.weatherSvg(M.weather, 1200, 1600, G.dark));
+      h('rect', { width: 1200, height: 1600, fill: L.bg }), Kit.weatherSvg(Kit.skyOf(M, embed), 1200, 1600, G.dark));
     const map = P.appendChild(h('g', { transform: `translate(${MX} ${MY}) scale(${k})` }));
     const glow = L.glow ? map.appendChild(h('path', { class: 'draw', d: ROUTE, fill: 'none', stroke: zoned ? ZC[3] : L.route, 'stroke-opacity': L.glow, 'stroke-width': sw * 2.4, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', filter: 'url(#glow)' })) : null;
     const line = map.appendChild(h('path', { class: 'draw', d: ROUTE, fill: 'none', stroke: zoned ? L.ink : L.route, 'stroke-width': zoned ? sw * 0.5 : sw, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
@@ -54,7 +54,7 @@ function draw(root, signal, resume, embed, scope) {
     const TY = EY + EH + 110;
     P.append(...title.map((l, j) => h('text', { class: 'in', x: 600, y: TY + j * 76, 'text-anchor': 'middle', 'font-size': 66, 'font-weight': 700, 'letter-spacing': '.06em', fill: L.ink, text: l })),
       h('text', { class: 'in', x: 600, y: TY + (title.length - 1) * 76 + 50, 'text-anchor': 'middle', 'font-size': 18, 'font-weight': 500, 'letter-spacing': '.28em', fill: L.soft,
-        text: [F.DAY, M.place, WD.EVENT, Kit.weatherLine(M.weather, F)].filter(Boolean).join(' · ').toUpperCase() }));
+        text: [F.DAY, M.place, WD.EVENT, Kit.weatherLine(Kit.skyOf(M, embed), F)].filter(Boolean).join(' · ').toUpperCase() }));
     const FY = TY + (title.length - 1) * 76 + 130, CW = 960 / FIG.length;
     P.append(h('path', { class: 'in', d: `M120 ${FY - 34} H1080`, stroke: L.line, 'stroke-width': 1.5 }),
       ...FIG.slice(1).map((_, j) => h('path', { class: 'in', d: `M${120 + CW * (j + 1)} ${FY - 10} v84`, stroke: L.line, 'stroke-width': 1.5 })));
