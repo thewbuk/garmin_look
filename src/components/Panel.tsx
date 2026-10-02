@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState, useSyncExternalStore } from 'react';
-import { ArrowLeft, Cloud, CloudRain, Download, Pause, Play, RotateCcw, Snowflake, Square, Sun, Upload, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, Cloud, CloudRain, Download, Mountain, Pause, Play, RotateCcw, Satellite, Snowflake, Square, Sun, Upload, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -18,6 +18,7 @@ type Weather = { text?: string; temp?: number; rain?: boolean; snow?: boolean };
 type Common = {
   get: () => State; subscribe: (fn: () => void) => () => void;
   UI: Words; look: string; looks: Record<string, Look>; setLook: (k: string) => void; units: 'km' | 'mi'; setUnits: (u: 'km' | 'mi') => void;
+  basemap: 'off' | 'terrain' | 'satellite'; setBasemap: (v: string) => void; canMap: boolean;
   weather?: { now: Weather | null; set: (w: Weather) => void };
   isSample: boolean; pickRun: () => void; backToSample: () => void;
 };
@@ -142,6 +143,17 @@ export default function Panel({ c }: { c: Controls }) {
             <ToggleGroupItem value="km" className="flex-1">Metric</ToggleGroupItem>
             <ToggleGroupItem value="mi" className="flex-1">Imperial</ToggleGroupItem>
           </ToggleGroup>
+        </Section>
+
+        <Separator />
+        <Section title={UI.map}>
+          <ToggleGroup type="single" variant="outline" size="sm" className="w-full" disabled={!c.canMap} value={c.canMap ? c.basemap : 'off'}
+            onValueChange={v => v && v !== c.basemap && c.setBasemap(v)}>
+            <ToggleGroupItem value="off" className="flex-1">{UI.mapOff}</ToggleGroupItem>
+            <ToggleGroupItem value="terrain" className="flex-1"><Mountain /> {UI.mapTerrain}</ToggleGroupItem>
+            <ToggleGroupItem value="satellite" className="flex-1"><Satellite /> {UI.mapSatellite}</ToggleGroupItem>
+          </ToggleGroup>
+          {!c.canMap && <Hint>{UI.mapOld}</Hint>}
         </Section>
 
         <Separator />

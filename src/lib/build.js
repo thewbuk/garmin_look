@@ -100,7 +100,9 @@ export function build(fit, extra = {}) {
     steps: foot && se.cycles ? se.cycles * 2 : null, calories: se.calories || null, power: se.avgPower || null,
     cadence: foot && se.avgCadence ? Math.round((se.avgCadence + (se.avgFractionalCadence || 0)) * 2) : null,
     trainingEffect: se.trainingEffect ?? null, trainingLoad: se.trainingLoad ? Math.round(se.trainingLoad) : null,
-    splitKm: splitM / 1000, unitsPerKm: r1(sc / 111.32), size: SIZE, ...extra, zoneLow,
+    splitKm: splitM / 1000, unitsPerKm: r1(sc / 111.32), size: SIZE,
+    // the projection, so a real map can be laid under the track: x = ox + (lon - lonMin) * kx * sc, y = oy + (latMax - lat) * sc
+    geo: { latMax, lonMin, kx: Math.round(kx * 1e6) / 1e6, sc: Math.round(sc * 1000) / 1000, ox: r1(ox), oy: r1(oy) }, ...extra, zoneLow,
   };
   return { meta, track: T, hr: hrSeries, splits, stops, climb, marks };
 }

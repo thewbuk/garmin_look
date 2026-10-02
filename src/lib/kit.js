@@ -1,5 +1,6 @@
 /* Shared by every template: formatting, words, DOM builder, looks, weather, audio and transport. */
 import * as Runs from './runs';
+import * as Basemap from './basemap';
 
 const LOC = 'en-GB';
 
@@ -188,6 +189,7 @@ export function words(RUN, F) {
     mark: m => (m.k === 'high' ? [`${M.highName || HIGH} · ${F.int(F.ht(M.maxAlt))} ${F.HU}`, M.highName ? HIGH : ''] : m.k === 'hr' ? [`${m.v} ${BPM}`, MARK.hr] : MARK[m.k]),
     start: 'Start', startFinish: 'Start and finish', finish: 'Finish',
     ui: { play: 'Play', pause: 'Pause', sound: 'Sound', mute: 'Mute', exportMp4: 'Export MP4', exportVideo: 'Export video', stop: 'Stop', withSound: 'export with sound',
+      map: 'Map', mapOff: 'None', mapTerrain: 'Terrain', mapSatellite: 'Satellite', mapOld: 'Load your run again to lay a map under it.',
       yours: 'Use your run…', sample: 'Back to the sample', playback: 'Playback', colours: 'Colours', units: 'Units', weather: 'Weather', export: 'Export', run: 'Run', picture: 'Picture', templates: 'All templates', drop: 'drop a .fit or Garmin .zip anywhere',
       noRecord: 'This browser cannot record the page. Use Chrome or Edge on desktop.', choose: 'Choose “This tab” in the prompt. Keep this tab visible while it records.', cancelled: 'Export cancelled.',
       noCrop: 'This browser cannot crop to the frame, so the whole tab is recorded.', recording: 'Recording… the file downloads when the film ends.',
@@ -263,6 +265,13 @@ export function audio(paused) {
   return au;
 }
 
+/* The real map under a template's map group, when one is chosen (never on the home page's live previews). */
+export function underlay(map, M, look, embed, o) {
+  if (embed || !M.geo || Basemap.basemap() === 'off') return null;
+  const b = Basemap.layer(M, look, o); map.insertBefore(b.el, map.firstChild); return b;
+}
+export const creditDiv = (b, size = 12) => (b ? h('div', { class: 'absolute right-[1.2%] bottom-[1%] text-(--soft) opacity-75 pointer-events-none whitespace-nowrap', style: `font-size:${size}px`, text: b.credit }) : null);
+
 export const WIDE = 1000, SIDE = 300;
 export function store(state) {
   const fns = new Set();
@@ -271,7 +280,8 @@ export function store(state) {
 }
 export function runControls(UI, look, signal, st) {
   const { pick } = Runs.attach({ signal, onError: note => st.set({ note }) });
-  return { UI, look, looks: LOOKS, setLook, units: units(), setUnits, isSample: Runs.isSample(), pickRun: pick, backToSample: () => { Runs.clear(); location.reload(); } };
+  return { UI, look, looks: LOOKS, setLook, units: units(), setUnits, basemap: Basemap.basemap(), setBasemap: Basemap.setBasemap, canMap: !!Runs.current('film').meta.geo,
+    isSample: Runs.isSample(), pickRun: pick, backToSample: () => { Runs.clear(); location.reload(); } };
 }
 
 /* Call finishExport from the timeline's last frame. Export records the tab itself (the film is DOM + SVG,

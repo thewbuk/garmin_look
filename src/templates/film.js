@@ -69,6 +69,7 @@ function draw(root, signal, resume, embed, scope) {
   const RAIN = !!(W && W.rain);
 
   const map = art.appendChild(h('g', { id: 'map', class: VIEWBOX }));
+  const BM = Kit.underlay(map, M, L, embed, { pad: 400, fade: 0.6 }); if (BM) add(Kit.creditDiv(BM, 12));
   const KM = M.unitsPerKm * F.U / 1000, SZ = M.size; // map units per km or mile
   const BAR = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50].filter(k => k * KM <= 380).pop() || 0.1, GRID = BAR * 0.4 * KM;
   const grid = map.appendChild(h('g', { id: 'grid', stroke: C.paper, 'stroke-opacity': 0.05, 'stroke-width': 1.4 }));

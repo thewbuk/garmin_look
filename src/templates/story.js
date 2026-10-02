@@ -31,6 +31,7 @@ function draw(root, signal, resume, embed, scope) {
     h('radialGradient', { id: 'gDot' }, h('stop', { offset: 0, 'stop-color': C.signal, 'stop-opacity': 0.55 }), h('stop', { offset: 1, 'stop-color': C.signal, 'stop-opacity': 0 })),
     h('clipPath', { id: 'cStrip' }, h('rect', { id: 'cStripR', x: 90, y: 1690, width: 0, height: 170 }))));
   const map = art.appendChild(h('g', { id: 'map', class: VIEWBOX }));
+  const BM = Kit.underlay(map, M, L, embed, { pad: 400, fade: 0.6 }); if (BM) add(Kit.creditDiv(BM, 18));
   const ghost = map.appendChild(h('path', { id: 'ghost', d: poly(T.x.map((x, i) => [x, T.y[i]])), fill: 'none', stroke: C.paper, 'stroke-opacity': 0.34, 'stroke-width': 3.2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
   const trail = map.appendChild(h('g', { fill: 'none', 'stroke-width': 11, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
   SEGS.forEach(s => { s.el = trail.appendChild(h('path', { d: poly(Array.from({ length: s.i1 - s.i0 + 1 }, (_, k) => [T.x[s.i0 + k], T.y[s.i0 + k]])), stroke: ZC[s.z], opacity: 0 })); s.on = false; });

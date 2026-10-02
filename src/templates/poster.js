@@ -31,6 +31,8 @@ function draw(root, signal, resume, embed, scope) {
     WD.EVENT ? h('text', { class: 'in', x: 80, y: y0 + 8, 'font-size': 30, fill: C.soft, text: WD.EVENT }) : '');
 
   const MY = y0 + 40, map = P.appendChild(h('g', { transform: `translate(80 ${MY}) scale(.7)` }));
+  const BM = Kit.underlay(map, M, L, embed, { fade: 0, radius: 28 });
+  if (BM) map.appendChild(h('text', { x: 986, y: 982, 'text-anchor': 'end', 'font-size': 21, fill: C.soft, text: BM.credit }));
   const KM = M.unitsPerKm * F.U / 1000, BAR = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50].filter(k => k * KM <= 300).pop() || 0.1, GRID = BAR * 0.4 * KM;
   const grid = map.appendChild(h('g', { stroke: C.ink, 'stroke-opacity': 0.06, 'stroke-width': 1.5 }));
   for (let v = 500 % GRID; v < 1000; v += GRID) grid.appendChild(h('path', { d: `M${v.toFixed(1)} 0 V1000 M0 ${v.toFixed(1)} H1000` }));
@@ -81,14 +83,14 @@ function draw(root, signal, resume, embed, scope) {
   }
 
   async function savePng() {
-    anim?.seek(anim.duration);
+    anim?.seek(anim.duration); await BM?.ready;
     const cv = await Kit.rasterize(P, 2400, 3000);
     const file = `${WD.NAME.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'run'}-poster.png`;
     cv.toBlob(b => { if (!b) return; Kit.download(b, file); st.set({ note: TX.saved(file) }); }, 'image/png');
   }
 
   const st = Kit.store({ note: '' });
-  const controls = { kind: 'still', get: st.get, subscribe: st.subscribe, ...(embed ? {} : Kit.runControls(UI, L.key, signal, st)), saveLabel: TX.save, replayLabel: TX.again, save: savePng, replay: () => scope.execute(play), picture: (w, h) => { anim?.seek(anim.duration); return Kit.rasterize(P, w, h); }, weather: Kit.weatherControl(M) };
+  const controls = { kind: 'still', get: st.get, subscribe: st.subscribe, ...(embed ? {} : Kit.runControls(UI, L.key, signal, st)), saveLabel: TX.save, replayLabel: TX.again, save: savePng, replay: () => scope.execute(play), picture: async (w, h) => { anim?.seek(anim.duration); await BM?.ready; return Kit.rasterize(P, w, h); }, weather: Kit.weatherControl(M) };
   const first = play();
   if (resume || embed) first.seek(first.duration);  // remounted, or shown in a card: skip the intro
   return { destroy: () => { anim?.pause(); scope.revert(); root.innerHTML = ''; }, controls };

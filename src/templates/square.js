@@ -31,6 +31,7 @@ function draw(root, signal, resume, embed, scope) {
   const WX = Kit.weatherLayer(Kit.skyOf(M, embed), 1080, 1080, L.dark); add(WX.el);
   art.appendChild(h('defs', {}, h('clipPath', { id: 'cBand' }, h('rect', { id: 'cBandR', x: 70, y: 820, width: 0, height: 200 }))));
   const map = art.appendChild(h('g', { id: 'map', class: VIEWBOX }));
+  const BM = Kit.underlay(map, M, L, embed, { pad: 400, fade: 0.6 }); if (BM) add(Kit.creditDiv(BM, 14));
   const ghost = map.appendChild(h('path', { id: 'ghost', d: poly(T.x.map((x, i) => [x, T.y[i]])), fill: 'none', stroke: C.ink, 'stroke-opacity': 0.28, 'stroke-width': 4, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
   const trail = map.appendChild(h('g', { fill: 'none', 'stroke-width': 13, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
   SEGS.forEach(s => { s.el = trail.appendChild(h('path', { d: poly(Array.from({ length: s.i1 - s.i0 + 1 }, (_, k) => [T.x[s.i0 + k], T.y[s.i0 + k]])), stroke: ZC[s.z], opacity: 0 })); s.on = false; });

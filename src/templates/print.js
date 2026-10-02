@@ -26,7 +26,7 @@ function draw(root, signal, resume, embed, scope) {
   const lines = (text, max) => { const out = ['']; for (const w of text.split(' ')) { if (out[out.length - 1] && (out[out.length - 1] + ' ' + w).length > max) out.push(w); else out[out.length - 1] += (out[out.length - 1] ? ' ' : '') + w; } return out.slice(0, 2); };
   const title = lines(WD.NAME.toUpperCase(), 22);
   const FIG = [[TX.stats[0], KMS, v => dec(v, 2), F.DU], [TX.stats[1], DUR, hms, ''], [TX.stats[2], F.ht(M.gain), int, F.HU], [TX.stats[3], DUR / KMS, pace, `/${F.DU}`]];
-  let route = Kit.stored(KEY) === 'zones' ? 'zones' : 'line', fvals = [], anim = null;
+  let route = Kit.stored(KEY) === 'zones' ? 'zones' : 'line', fvals = [], anim = null, BM = null;
 
   function draw() {
     const zoned = route === 'zones', ZC = [...G.zones];
@@ -38,6 +38,8 @@ function draw(root, signal, resume, embed, scope) {
     P.append(h('defs', {}, h('filter', { id: 'glow', x: '-10%', y: '-10%', width: '120%', height: '120%' }, h('feGaussianBlur', { stdDeviation: 9 / k }))),
       h('rect', { width: 1200, height: 1600, fill: L.bg }), Kit.weatherSvg(Kit.skyOf(M, embed), 1200, 1600, G.dark));
     const map = P.appendChild(h('g', { transform: `translate(${MX} ${MY}) scale(${k})` }));
+    BM = Kit.underlay(map, M, G, embed, { fade: 0, radius: 18 / k });
+    if (BM) map.appendChild(h('text', { x: 1000 - 12 / k, y: 1000 - 12 / k, 'text-anchor': 'end', 'font-size': 15 / k, fill: L.soft, text: BM.credit }));
     const glow = L.glow ? map.appendChild(h('path', { class: 'draw', d: ROUTE, fill: 'none', stroke: zoned ? ZC[3] : L.route, 'stroke-opacity': L.glow, 'stroke-width': sw * 2.4, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', filter: 'url(#glow)' })) : null;
     const line = map.appendChild(h('path', { class: 'draw', d: ROUTE, fill: 'none', stroke: zoned ? L.ink : L.route, 'stroke-width': zoned ? sw * 0.5 : sw, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
     if (zoned) map.appendChild(h('g', { fill: 'none', 'stroke-width': sw, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' },
@@ -83,14 +85,14 @@ function draw(root, signal, resume, embed, scope) {
   }
 
   async function savePng() {
-    anim?.seek(anim.duration);
+    anim?.seek(anim.duration); await BM?.ready;
     const cv = await Kit.rasterize(P, 2400, 3200);
     const file = `${WD.NAME.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'run'}-print-${G.key}.png`;
     cv.toBlob(b => { if (!b) return; Kit.download(b, file); st.set({ note: TX.saved(file) }); }, 'image/png');
   }
 
   const st = Kit.store({ note: '', route });
-  const controls = { kind: 'still', get: st.get, subscribe: st.subscribe, ...(embed ? {} : Kit.runControls(UI, G.key, signal, st)), saveLabel: TX.save, replayLabel: TX.again, save: savePng, replay: () => scope.execute(play), picture: (w, h) => { anim?.seek(anim.duration); return Kit.rasterize(P, w, h); }, weather: Kit.weatherControl(M),
+  const controls = { kind: 'still', get: st.get, subscribe: st.subscribe, ...(embed ? {} : Kit.runControls(UI, G.key, signal, st)), saveLabel: TX.save, replayLabel: TX.again, save: savePng, replay: () => scope.execute(play), picture: async (w, h) => { anim?.seek(anim.duration); await BM?.ready; return Kit.rasterize(P, w, h); }, weather: Kit.weatherControl(M),
     options: [{ key: 'route', label: TX.route, choices: Object.entries(TX.routes), set: v => { route = v; Kit.remember(KEY, v); st.set({ route: v }); scope.execute(play); } }] };
   const first = play();
   if (resume || embed) first.seek(first.duration);  // remounted, or shown in a card: skip the intro
